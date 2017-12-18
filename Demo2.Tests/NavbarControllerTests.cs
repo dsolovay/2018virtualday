@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Demo2.Controllers;
+using Demo2.Models;
 using FluentAssertions;
 using Glass.Mapper.Sc;
 using NSubstitute;
@@ -35,8 +36,25 @@ namespace Demo2.Tests
             var resultCollection = result.Model as IEnumerable<Models.NavElement>;
             resultCollection.Should().BeEmpty();
         }
-        
 
+        [Fact]
+        public void NavbarController_HasChildrenOfHome_ReturnsSameNumber()
+        {
+
+            _context.GetHomeItem<ISampleItem>().Children.Returns(new List<ISampleItem>
+            {
+                Substitute.For<ISampleItem>(),
+                Substitute.For<ISampleItem>(),
+                Substitute.For<ISampleItem>()
+            });
+
+            ViewResult result = _sut.Index() as ViewResult;
+            
+         
+            var resultCollection = result.Model as IEnumerable<Models.NavElement>;
+            resultCollection.Should().HaveCount(3);
+        }
+ 
         // If grand children, add drop list.
     }
 }
