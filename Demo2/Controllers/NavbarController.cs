@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Demo2.Models;
 using Glass.Mapper.Sc;
 
 namespace Demo2.Controllers
@@ -19,8 +20,14 @@ namespace Demo2.Controllers
         // GET: Navbar
         public ActionResult Index()
         {
-            var home = _sitecoreContext.GetHomeItem<ISampleItem>()
-            return View("~/Views/Navbar.cshtml", new List<Models.NavElement>());
+            var home = _sitecoreContext.GetHomeItem<ISampleItem>();
+
+            List<NavElement> list = new List<NavElement>();
+            foreach (var child in home.Children)
+            {
+                list.Add(new NavElement());
+            }
+            return View("~/Views/Navbar.cshtml", list);
         }
     }
 }
