@@ -1,9 +1,7 @@
 ﻿@using Demo2.Models
 @model IEnumerable<Demo2.Models.NavElement>  
 
-@{
-    IEnumerable<NavElement> Model1 = new List<NavElement> { new NavElement { Text = "Link 1", Active = true }, new NavElement() { Text = "Link 2", Active = false} };    
-}
+ 
 
 <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -12,7 +10,7 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            @foreach (var elment in Model1)
+            @foreach (var elment in Model)
             {
                 string css = elment.Active ? "active" : "";
            
