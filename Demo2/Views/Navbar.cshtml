@@ -10,12 +10,12 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            @foreach (var elment in Model)
+            @foreach (var element in Model)
             {
-                string css = elment.Active ? "active" : "";
+                string css = element.Active ? "active" : "";
            
 
-            <li class="@css"><a href="#">@elment.Text</a></li>
+            <li class="@css"><a href="@element.Href">@element.Text</a></li>
                  
             }
            

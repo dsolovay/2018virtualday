@@ -21,13 +21,16 @@ namespace Demo2.Controllers
         public ActionResult Index()
         {
             var home = _sitecoreContext.GetHomeItem<IBaseItem>();
+            var current = _sitecoreContext.GetCurrentItem<IBaseItem>();
 
             List<NavElement> list = new List<NavElement>();
             foreach (var child in home.Children)
             {
-                list.Add(new NavElement{Text = child.Name, Href=child.Url});
+                 
+                list.Add(new NavElement{Text = child.Name, Href=child.Url, Active = child.Id==current.Id});
             }
             return View("~/Views/Navbar.cshtml", list);
         }
+
     }
 }
