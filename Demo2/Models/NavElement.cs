@@ -4,5 +4,6 @@
     {
         public string Text { get; set; }
         public bool Active { get; set; }
+        public string Href { get; set; }
     }
 }

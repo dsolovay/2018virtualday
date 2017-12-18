@@ -20,12 +20,12 @@ namespace Demo2.Controllers
         // GET: Navbar
         public ActionResult Index()
         {
-            var home = _sitecoreContext.GetHomeItem<ISampleItem>();
+            var home = _sitecoreContext.GetHomeItem<IBaseItem>();
 
             List<NavElement> list = new List<NavElement>();
             foreach (var child in home.Children)
             {
-                list.Add(new NavElement());
+                list.Add(new NavElement{Text = child.Name, Href=child.Url});
             }
             return View("~/Views/Navbar.cshtml", list);
         }

@@ -32,7 +32,7 @@ namespace Demo2.Tests
         public void NavbarController_NoChildrenOfHome_ReturnsEmptyList()
         {
             ViewResult result = _sut.Index() as ViewResult;
-         
+
             var resultCollection = result.Model as IEnumerable<Models.NavElement>;
             resultCollection.Should().BeEmpty();
         }
@@ -41,20 +41,46 @@ namespace Demo2.Tests
         public void NavbarController_HasChildrenOfHome_ReturnsSameNumber()
         {
 
-            _context.GetHomeItem<ISampleItem>().Children.Returns(new List<ISampleItem>
+            _context.GetHomeItem<IBaseItem>().Children.Returns(new List<IBaseItem>
             {
-                Substitute.For<ISampleItem>(),
-                Substitute.For<ISampleItem>(),
-                Substitute.For<ISampleItem>()
+                Substitute.For<IBaseItem>(),
+                Substitute.For<IBaseItem>(),
+                Substitute.For<IBaseItem>()
             });
 
             ViewResult result = _sut.Index() as ViewResult;
-            
-         
+
+
             var resultCollection = result.Model as IEnumerable<Models.NavElement>;
             resultCollection.Should().HaveCount(3);
         }
- 
+
+
+        [Fact]
+        public void NavbarElement_KeepsNameAndHref()
+        {
+
+            IBaseItem child = Substitute.For<IBaseItem>();
+            string name = "some name";
+            child.Name.Returns(name);
+            string someUrl = "some url";
+            child.Url.Returns(someUrl);
+            _context.GetHomeItem<IBaseItem>().Children.Returns(new List<IBaseItem>
+                {
+                    child
+                });
+
+            ViewResult result = _sut.Index() as ViewResult;
+
+
+            var resultCollection = result.Model as IEnumerable<Models.NavElement>;
+            resultCollection.Should().HaveCount(1);
+            var model = resultCollection.First();
+            model.Text.Should().Be(name);
+            model.Href.Should().Be(someUrl);
+
+        }
+
         // If grand children, add drop list.
     }
 }
