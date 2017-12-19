@@ -104,7 +104,7 @@ namespace Demo2.Tests
 
 
         [Theory, CustomizedData]
-        public void CustomAttribute(Item home, Item child1, Item child2, Item child3, Database db)
+        public void CustomAttribute(Item home, Item child1, Item child2, Item child3)
         {
             home.GetChildren().Returns(new ChildList(home, new List<Item> { child1, child2, child3 }));
 
@@ -114,21 +114,50 @@ namespace Demo2.Tests
         }
 
         [Theory, CustomizedData]
-        public void SetsNameAndHref(Item home, Item child1, Database db, string someUrl)
+        public void SetsItemName(Item home, Item child1)
         {
             home.GetChildren().Returns(new ChildList(home, new List<Item> {child1}));
             child1.Name.Should().NotBeNullOrEmpty();
-            var fakeLinkManager = Substitute.For<BaseLinkManager>();
-            ServiceLocator.SetServiceProvider(new LinkManagerService(fakeLinkManager));
-            fakeLinkManager.GetItemUrl(child1).Returns(someUrl);
             
             ViewResult result = _sut.Index();
 
             NavElement navElement = result.Model.GetList().First();
             navElement.Text.Should().Be(child1.Name);
+            
+        }
+
+        [NCrunch.Framework.Isolated]  // ServiceLocator change can cause side effects.
+        [Theory, CustomizedData]
+        public void SetsUrlFromLinkManager(Item home, Item child1, string someUrl)
+        {
+            home.GetChildren().Returns(new ChildList(home, new List<Item> { child1 }));
+            var fakeLinkManager = Substitute.For<BaseLinkManager>();
+            ServiceLocator.SetServiceProvider(new LinkManagerService(fakeLinkManager));
+            fakeLinkManager.GetItemUrl(child1).Returns(someUrl);
+
+            ViewResult result = _sut.Index();
+
+            NavElement navElement = result.Model.GetList().First();
             navElement.Href.Should().Be(someUrl);
         }
 
+        [Theory, CustomizedData]
+        public void SetsActiveFlag(Item home, Item child1, Item child2, Item child3)
+        {
+            home.GetChildren().Returns(new ChildList(home, new List<Item> { child1, child2, child3 }));
+            Sitecore.Context.Item = child2;
+
+            ViewResult result = _sut.Index();
+
+            var results = result.Model.GetList().ToArray();
+            results[0].Active.Should().BeFalse();
+            results[1].Active.Should().BeTrue();
+            results[2].Active.Should().BeFalse();
+        }
+
+        #endregion
+
+        #region CustomizedDataAttributeTests
         [Theory, CustomizedData]
         public void CanHandleStringNamedHome(string home)
         {
@@ -144,7 +173,9 @@ namespace Demo2.Tests
 
         private static SiteContext GetSiteContext()
         {
-            return new SiteContext(new SiteInfo(new StringDictionary() { { "rootPath", "/sitecore/content" }, { "startItem", "home" } }));
+            var stringDictionary = new StringDictionary() { { "rootPath", "/sitecore/content" }, { "startItem", "home" } };
+            var siteInfo = new SiteInfo(stringDictionary);
+            return new SiteContext(siteInfo);
         }
     }
 
@@ -220,7 +251,8 @@ namespace Demo2.Tests
             foreach (Item child in children)
             {
                 string url = LinkManager.GetItemUrl(child);
-                list.Add(new NavElement{Text=child.Name, Href=url});
+                ID contextItemId = Sitecore.Context.Item?.ID;
+                list.Add(new NavElement{Text=child.Name, Href=url, Active = child.ID==contextItemId});
             }
             return View("~/Views/Navbar.cshtml", list);
         }

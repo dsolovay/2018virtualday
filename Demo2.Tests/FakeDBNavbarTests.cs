@@ -26,7 +26,6 @@ namespace Demo2.Tests
         {
             _sut = new Navbar2Controller();
             Sitecore.Context.Site = GetSiteWithStartItemSetToHome();
-            
         }
 
         [Fact]
@@ -129,7 +128,9 @@ namespace Demo2.Tests
 
         private static SiteContext GetSiteWithStartItemSetToHome()
         {
-            return new SiteContext(new SiteInfo(new StringDictionary() {{"rootPath", "/sitecore/content"}, {"startItem", "home"}}));
+            var stringDictionary = new StringDictionary() {{"rootPath", "/sitecore/content"}, {"startItem", "home"}};
+            var siteInfo = new SiteInfo(stringDictionary);
+            return new SiteContext(siteInfo);
         }
     }
 
