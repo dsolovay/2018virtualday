@@ -3,4 +3,5 @@ obj/
 lib/
 packages/
 *.ncrunch*
-.vs/
+.vs/_NCrunch_Demo2 Demo2.v3.ncrunchsolution Demo2.v3.ncrunchsolution.user
+.vs
